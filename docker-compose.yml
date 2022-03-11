@@ -1,0 +1,51 @@
+version: '3'
+services:
+  app:
+    container_name: docker-node-mongo
+    restart: always
+    build: .
+    ports:
+      - '81:3000'
+    links:
+      - mongo
+    depends_on: 
+      - mongo
+    networks:
+      - web_server
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - db_dataVolume:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - web_server
+      - utilitar
+      
+  mongUI:
+    container_name: mongoExpress
+    image: mongo-express
+    links:
+      - mongo
+    environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_PORT=27017
+            - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    depends_on: 
+      - mongo
+    ports:
+      - "8082:8081"
+    networks:
+      - utilitar           
+networks:
+  web_server: 
+    driver: bridge
+  utilitar:
+    driver: bridge
+    
+
+volumes:
+      db_dataVolume: {}
+      
+
